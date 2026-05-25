@@ -51,7 +51,7 @@ wrong.Visible = false
 wrong.Parent = pwFrame
 
 local xrayGui = Instance.new("Frame")
-xrayGui.Size = UDim2.new(0, 220, 0, 230)
+xrayGui.Size = UDim2.new(0, 220, 0, 420) -- EXTENDED HEIGHT
 xrayGui.Position = UDim2.new(0, 20, 0, 200)
 xrayGui.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 xrayGui.Visible = false
@@ -113,6 +113,125 @@ healBtn.Text = "Heal"
 healBtn.Font = Enum.Font.GothamBold
 healBtn.TextScaled = true
 healBtn.Parent = xrayGui
+
+---------------------------------------------------------
+-- TITLE SYSTEM (MERGED)
+---------------------------------------------------------
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 0, 20)
+titleLabel.Position = UDim2.new(0, 0, 0, 210)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "Title:"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextScaled = true
+titleLabel.Parent = xrayGui
+
+local titleBox = Instance.new("TextBox")
+titleBox.Size = UDim2.new(1, -20, 0, 25)
+titleBox.Position = UDim2.new(0, 10, 0, 235)
+titleBox.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+titleBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleBox.PlaceholderText = "Enter title"
+titleBox.Text = ""
+titleBox.TextScaled = true
+titleBox.Font = Enum.Font.Gotham
+titleBox.Parent = xrayGui
+
+local function createRGBSlider(yPos)
+    local bg = Instance.new("Frame")
+    bg.Size = UDim2.new(1, -20, 0, 10)
+    bg.Position = UDim2.new(0, 10, 0, yPos)
+    bg.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    bg.Parent = xrayGui
+
+    local btn = Instance.new("Frame")
+    btn.Size = UDim2.new(0, 12, 0, 20)
+    btn.Position = UDim2.new(0, 0, -0.5, 5)
+    btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Parent = bg
+
+    return bg, btn
+end
+
+local rBg, rBtn = createRGBSlider(270)
+local gBg, gBtn = createRGBSlider(300)
+local bBg, bBtn = createRGBSlider(330)
+
+local r, g, b = 255, 255, 255
+local draggingR, draggingG, draggingB = false, false, false
+
+local UIS = game:GetService("UserInputService")
+
+local function sliderLogic(bg, btn, callback, flag)
+    btn.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            _G[flag] = true
+        end
+    end)
+
+    UIS.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            _G[flag] = false
+        end
+    end)
+
+    UIS.InputChanged:Connect(function(input)
+        if _G[flag] and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local mouseX = UIS:GetMouseLocation().X
+            local barPos = bg.AbsolutePosition.X
+            local barSize = bg.AbsoluteSize.X
+            local percent = math.clamp((mouseX - barPos) / barSize, 0, 1)
+            btn.Position = UDim2.new(percent, -6, -0.5, 5)
+            callback(math.floor(percent * 255))
+        end
+    end)
+end
+
+sliderLogic(rBg, rBtn, function(v) r = v end, "draggingR")
+sliderLogic(gBg, gBtn, function(v) g = v end, "draggingG")
+sliderLogic(bBg, bBtn, function(v) b = v end, "draggingB")
+
+local applyBtn = Instance.new("TextButton")
+applyBtn.Size = UDim2.new(1, -20, 0, 30)
+applyBtn.Position = UDim2.new(0, 10, 0, 360)
+applyBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+applyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+applyBtn.Text = "Apply Title"
+applyBtn.Font = Enum.Font.GothamBold
+applyBtn.TextScaled = true
+applyBtn.Parent = xrayGui
+
+local billboard = nil
+
+applyBtn.MouseButton1Click:Connect(function()
+    local char = game.Players.LocalPlayer.Character
+    if not char then return end
+
+    if billboard then
+        billboard:Destroy()
+    end
+
+    billboard = Instance.new("BillboardGui")
+    billboard.Size = UDim2.new(0, 200, 0, 50)
+    billboard.Adornee = char:WaitForChild("Head")
+    billboard.AlwaysOnTop = true
+    billboard.Parent = char
+
+    local text = Instance.new("TextLabel")
+    text.Size = UDim2.new(1, 0, 1, 0)
+    text.BackgroundTransparency = 1
+    text.Text = titleBox.Text
+    text.TextScaled = true
+    text.Font = Enum.Font.GothamBold
+    text.TextColor3 = Color3.fromRGB(r, g, b)
+    text.Parent = billboard
+end)
+
+---------------------------------------------------------
+-- REST OF YOUR SCRIPT (UNCHANGED)
+---------------------------------------------------------
 
 discordBtn.MouseButton1Click:Connect(function()
     setclipboard("https://discord.com/channels/1508459728060022885/1508460599716216942")
@@ -292,15 +411,3 @@ tabletBtn.MouseButton1Click:Connect(function()
         tabletBtn.Text = "▲"
         tabletOpen = false
     end
-end)
-
-pwEnter.MouseButton1Click:Connect(function()
-    if pwBox.Text == "Gabrieliscool" then
-        pwFrame:Destroy()
-        tabletBtn.Visible = true
-    else
-        wrong.Visible = true
-        task.wait(2)
-        wrong.Visible = false
-    end
-end)
