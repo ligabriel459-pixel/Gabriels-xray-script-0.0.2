@@ -51,7 +51,7 @@ wrong.Visible = false
 wrong.Parent = pwFrame
 
 local xrayGui = Instance.new("Frame")
-xrayGui.Size = UDim2.new(0, 220, 0, 160)
+xrayGui.Size = UDim2.new(0, 220, 0, 210)
 xrayGui.Position = UDim2.new(0, 20, 0, 200)
 xrayGui.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 xrayGui.Visible = false
@@ -104,9 +104,28 @@ discordBtn.Font = Enum.Font.GothamBold
 discordBtn.TextScaled = true
 discordBtn.Parent = xrayGui
 
+local healBtn = Instance.new("TextButton")
+healBtn.Size = UDim2.new(1, -20, 0, 25)
+healBtn.Position = UDim2.new(0, 10, 0, 170)
+healBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+healBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+healBtn.Text = "Heal"
+healBtn.Font = Enum.Font.GothamBold
+healBtn.TextScaled = true
+healBtn.Parent = xrayGui
+
+local invisBtn = Instance.new("TextButton")
+invisBtn.Size = UDim2.new(1, -20, 0, 25)
+invisBtn.Position = UDim2.new(0, 10, 0, 205)
+invisBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+invisBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+invisBtn.Text = "Become Invisible"
+invisBtn.Font = Enum.Font.GothamBold
+invisBtn.TextScaled = true
+invisBtn.Parent = xrayGui
+
 discordBtn.MouseButton1Click:Connect(function()
     setclipboard("https://discord.com/channels/1508459728060022885/1508460599716216942")
-
     local copied = Instance.new("TextLabel")
     copied.Size = UDim2.new(1, 0, 1, 0)
     copied.BackgroundTransparency = 1
@@ -115,9 +134,64 @@ discordBtn.MouseButton1Click:Connect(function()
     copied.TextColor3 = Color3.fromRGB(255, 255, 255)
     copied.Font = Enum.Font.GothamBold
     copied.Parent = gui
-
     task.wait(1)
     copied:Destroy()
+end)
+
+healBtn.MouseButton1Click:Connect(function()
+    local char = game.Players.LocalPlayer.Character
+    if char and char:FindFirstChild("Humanoid") then
+        char.Humanoid.Health = char.Humanoid.MaxHealth
+    end
+end)
+
+local invisible = false
+local cloneModel = nil
+
+local function setCharacterTransparency(char, value)
+    for _, v in ipairs(char:GetDescendants()) do
+        if v:IsA("BasePart") or v:IsA("Decal") then
+            v.Transparency = value
+        end
+    end
+end
+
+invisBtn.MouseButton1Click:Connect(function()
+    local player = game.Players.LocalPlayer
+    local char = player.Character
+    if not char then return end
+
+    if not invisible then
+        invisible = true
+        invisBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+
+        cloneModel = char:Clone()
+        for _, v in ipairs(cloneModel:GetDescendants()) do
+            if v:IsA("BasePart") then
+                v.CanCollide = false
+            end
+        end
+        cloneModel.Parent = workspace
+        cloneModel.HumanoidRootPart.Anchored = true
+
+        setCharacterTransparency(char, 1)
+
+        game:GetService("RunService").RenderStepped:Connect(function()
+            if cloneModel and player.Character then
+                cloneModel:SetPrimaryPartCFrame(player.Character.PrimaryPart.CFrame)
+            end
+        end)
+    else
+        invisible = false
+        invisBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+
+        setCharacterTransparency(char, 0)
+
+        if cloneModel then
+            cloneModel:Destroy()
+            cloneModel = nil
+        end
+    end
 end)
 
 local overlay = Instance.new("Frame")
