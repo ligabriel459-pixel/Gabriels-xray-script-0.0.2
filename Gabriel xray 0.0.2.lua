@@ -51,7 +51,7 @@ wrong.Visible = false
 wrong.Parent = pwFrame
 
 local xrayGui = Instance.new("Frame")
-xrayGui.Size = UDim2.new(0, 220, 0, 210)
+xrayGui.Size = UDim2.new(0, 220, 0, 260)
 xrayGui.Position = UDim2.new(0, 20, 0, 200)
 xrayGui.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 xrayGui.Visible = false
@@ -156,6 +156,13 @@ local function setCharacterTransparency(char, value)
     end
 end
 
+local function keepRootInvisible(char)
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if root then
+        root.Transparency = 1
+    end
+end
+
 invisBtn.MouseButton1Click:Connect(function()
     local player = game.Players.LocalPlayer
     local char = player.Character
@@ -175,6 +182,7 @@ invisBtn.MouseButton1Click:Connect(function()
         cloneModel.HumanoidRootPart.Anchored = true
 
         setCharacterTransparency(char, 1)
+        keepRootInvisible(char)
 
         game:GetService("RunService").RenderStepped:Connect(function()
             if cloneModel and player.Character then
@@ -186,6 +194,7 @@ invisBtn.MouseButton1Click:Connect(function()
         invisBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
 
         setCharacterTransparency(char, 0)
+        keepRootInvisible(char)
 
         if cloneModel then
             cloneModel:Destroy()
@@ -193,7 +202,6 @@ invisBtn.MouseButton1Click:Connect(function()
         end
     end
 end)
-
 local overlay = Instance.new("Frame")
 overlay.Size = UDim2.new(1, 0, 1, 0)
 overlay.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
