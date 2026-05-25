@@ -51,7 +51,7 @@ wrong.Visible = false
 wrong.Parent = pwFrame
 
 local xrayGui = Instance.new("Frame")
-xrayGui.Size = UDim2.new(0, 220, 0, 130)
+xrayGui.Size = UDim2.new(0, 220, 0, 160)
 xrayGui.Position = UDim2.new(0, 20, 0, 200)
 xrayGui.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 xrayGui.Visible = false
@@ -93,6 +93,20 @@ superBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
 superBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 superBtn.Text = "Super X-Ray"
 superBtn.Parent = xrayGui
+
+local discordBtn = Instance.new("TextButton")
+discordBtn.Size = UDim2.new(1, -20, 0, 25)
+discordBtn.Position = UDim2.new(0, 10, 0, 135)
+discordBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 150)
+discordBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+discordBtn.Text = "Discord Server"
+discordBtn.Font = Enum.Font.GothamBold
+discordBtn.TextScaled = true
+discordBtn.Parent = xrayGui
+
+discordBtn.MouseButton1Click:Connect(function()
+    setclipboard("https://discord.com/channels/1508459728060022885/1508460599716216942")
+end)
 
 local overlay = Instance.new("Frame")
 overlay.Size = UDim2.new(1, 0, 1, 0)
