@@ -106,6 +106,18 @@ discordBtn.Parent = xrayGui
 
 discordBtn.MouseButton1Click:Connect(function()
     setclipboard("https://discord.com/channels/1508459728060022885/1508460599716216942")
+
+    local copied = Instance.new("TextLabel")
+    copied.Size = UDim2.new(1, 0, 1, 0)
+    copied.BackgroundTransparency = 1
+    copied.Text = "Copied to clipboard"
+    copied.TextScaled = true
+    copied.TextColor3 = Color3.fromRGB(255, 255, 255)
+    copied.Font = Enum.Font.GothamBold
+    copied.Parent = gui
+
+    task.wait(1)
+    copied:Destroy()
 end)
 
 local overlay = Instance.new("Frame")
